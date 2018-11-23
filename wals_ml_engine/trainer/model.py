@@ -109,7 +109,8 @@ def _ratings_train_and_test(use_headers, delimiter, input_file):
                            sep=delimiter,
                            names=headers,
                            header=header_row,
-                           dtype={
+                           engine = 'python',
+                           converters={
                                'user_id': np.int32,
                                'item_id': np.int32,
                                'rating': np.float32,
