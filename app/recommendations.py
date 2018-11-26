@@ -30,7 +30,7 @@ ROW_MODEL_FILE = 'model/row.npy'
 COL_MODEL_FILE = 'model/col.npy'
 USER_MODEL_FILE = 'model/user.npy'
 ITEM_MODEL_FILE = 'model/item.npy'
-USER_ITEM_DATA_FILE = 'data/recommendation_events.csv'
+#USER_ITEM_DATA_FILE = 'data/recommendation_events.csv'
 
 
 class Recommendations(object):
@@ -60,7 +60,7 @@ class Recommendations(object):
     logging.info('Downloading blobs.')
 
     model_files = [ROW_MODEL_FILE, COL_MODEL_FILE, USER_MODEL_FILE,
-                   ITEM_MODEL_FILE, USER_ITEM_DATA_FILE]
+                   ITEM_MODEL_FILE]
     for model_file in model_files:
       blob = bucket.blob(model_file)
       with open(os.path.join(local_model_path, model_file), 'wb') as file_obj:
@@ -77,9 +77,9 @@ class Recommendations(object):
     logging.info('Finished loading arrays.')
 
     # load user_item history into pandas dataframe
-    views_df = pd.read_csv(os.path.join(local_model_path,
-                                        USER_ITEM_DATA_FILE), sep=',', header=0)
-    self.user_items = views_df.groupby('clientId')
+    # views_df = pd.read_csv(os.path.join(local_model_path,
+    #                                     USER_ITEM_DATA_FILE), sep=',', header=0)
+    # self.user_items = views_df.groupby('clientId')
 
     logging.info('Finished loading model.')
 
@@ -98,14 +98,14 @@ class Recommendations(object):
     article_recommendations = None
 
     # map user id into ratings matrix user index
-    user_idx = np.searchsorted(self.user_map, user_id)
+    user_idx = np.where(self.user_map, user_id - 1)[0][0]
 
     if user_idx:
       # get already viewed items from views dataframe
-      already_rated = self.user_items.get_group(user_id).contentId
-      already_rated_idx = [np.searchsorted(self.item_map, i)
-                           for i in already_rated]
-
+      # already_rated = self.user_items.get_group(user_id).contentId
+      # already_rated_idx = [np.searchsorted(self.item_map, i)
+      #                      for i in already_rated]
+      already_rated_idx = []
       # generate list of recommended article indexes from model
       recommendations = generate_recommendations(user_idx, already_rated_idx,
                                                  self.user_factor,

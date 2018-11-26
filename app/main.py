@@ -22,7 +22,7 @@ app = Flask(__name__)
 
 rec_util = Recommendations()
 
-DEFAULT_RECS = 5
+DEFAULT_RECS = 10
 
 
 @app.route('/recommendation', methods=['GET'])
