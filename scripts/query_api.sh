@@ -38,8 +38,8 @@ main() {
 }
 
 # Defaults.
-USER_ID="5448543647176335931"
-NUM_RECS=5
+USER_ID="196"
+NUM_RECS=15
 QUIET="false"
 
 if [[ "$#" == 0 ]]; then

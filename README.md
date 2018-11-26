@@ -28,3 +28,8 @@ However, there are enough bugs in the code and tutorial descriptions that I'm fo
 1m dataset: `./mltrain.sh train gs://$BUCKET/data/ratings.dat --delimiter ::`  
 20m dataset: `./mltrain.sh train gs://$BUCKET/data/ratings.csv --delimiter , --headers`  
 * Also note the code change in this repo in model.py, pd.read_csv must be changed to handle dtypes using converters and specifying engine to python, otherwise the CloudML engine errors out.
+
+## Part 4: Deploying the movie recommendation system
+For this very basic run-through I skipped [Part 3](https://cloud.google.com/solutions/machine-learning/recommendation-system-tensorflow-apply-to-analytics-data) of the original tutorial because I wanted to focus on just one very basic recommender system and deploying that to an endpoint.  Below is a run-through of what I used for [Part 4](https://cloud.google.com/solutions/machine-learning/recommendation-system-tensorflow-deploy) of the tutorial to deploy the movie recommendation via Google App Engine.  
+
+

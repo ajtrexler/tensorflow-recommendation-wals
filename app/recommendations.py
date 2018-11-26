@@ -98,7 +98,7 @@ class Recommendations(object):
     article_recommendations = None
 
     # map user id into ratings matrix user index
-    user_idx = np.where(self.user_map, user_id - 1)[0][0]
+    user_idx = np.where(self.user_map, user_id - 1)[0]
 
     if user_idx:
       # get already viewed items from views dataframe
