@@ -30,6 +30,31 @@ However, there are enough bugs in the code and tutorial descriptions that I'm fo
 * Also note the code change in this repo in model.py, pd.read_csv must be changed to handle dtypes using converters and specifying engine to python, otherwise the CloudML engine errors out.
 
 ## Part 4: Deploying the movie recommendation system
-For this very basic run-through I skipped [Part 3](https://cloud.google.com/solutions/machine-learning/recommendation-system-tensorflow-apply-to-analytics-data) of the original tutorial because I wanted to focus on just one very basic recommender system and deploying that to an endpoint.  Below is a run-through of what I used for [Part 4](https://cloud.google.com/solutions/machine-learning/recommendation-system-tensorflow-deploy) of the tutorial to deploy the movie recommendation via Google App Engine.  
+For this very basic run-through I skipped [Part 3](https://cloud.google.com/solutions/machine-learning/recommendation-system-tensorflow-apply-to-analytics-data) of the original tutorial because I wanted to focus on just one very basic recommender system and deploying that to an endpoint.  Below are notes of what I used for [Part 4](https://cloud.google.com/solutions/machine-learning/recommendation-system-tensorflow-deploy) of the tutorial to deploy the movie recommendation via Google App Engine.  
 
+* I created a VM to do all of this but you could do it in your local if you have gsutil/gcloud tools installed.
+* make a staging bucket for the recommender system:
+```
+export BUCKET=gs://recserve_${gcloud config get-value project}  
+gsutil mb ${BUCKET}
+```
 
+* build a distributable package for the model (from within the tensorflow-reco cloned git root):
+```
+cd wals_ml_engine
+python setup.py sdist
+```
+
+* here the tutorial recommends retraining on your local to build the model artifacts again.  I skipped this and copied over some model files [col.npy,item.npy,row.npy,user.npy] from when I did hyperparameter tuning in Part 3 above.
+```
+gsutil cp gs://source/bucket/location/model/* $BUCKET
+```
+* 
+`gcloud app create --region=us-east1
+gcloud app update --no-split-health-checks`
+
+* navigate to the scripts folder and run `./prepare_deploy_api.sh`.  This will display a command to run to deploy the endpoint service.  The `prepare_deploy_api` shell script simply copies over a preconfigured YAML file from the repo and substitutes your-project-id as appropriate.  Run the command displayed that starts with `gcloud endpoints services deploy [TMPXYZFILE]`.  GCP deploys your API endpoint.
+
+* next we need to setup the actual code/app that will run behind the API endpoint to actually process requests made at the API.  Run  `./prepare_deploy_app.sh`.  This will take awhile as VM instances are provisioned to run the model code/app.
+
+* if this runs successfully, then you should be able to run ./query_api.sh from the scripts folder and get back some default recommendations.
